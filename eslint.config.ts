@@ -1,0 +1,6 @@
+import janna from '@jannajs/lint/eslint'
+
+export default janna({
+  next: true,
+  tailwind: true,
+})
