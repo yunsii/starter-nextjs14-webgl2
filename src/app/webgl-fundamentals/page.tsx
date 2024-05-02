@@ -1,8 +1,9 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createProgram } from 'twgl.js'
+import Image from 'next/image'
 
 import { glsl } from '@/helpers/glsl'
 import { ensureNonNullable } from '@/helpers/common'
@@ -41,10 +42,15 @@ const fragmentShaderSource = glsl`
 `
 
 export default function Page() {
+  const [capture, setCapture] = useState<string | null>(null)
+
   const draw = useCallback(() => {
     // Get A WebGL context
     const canvas = document.querySelector<HTMLCanvasElement>('#c')
-    const gl = ensureNonNullable(canvas?.getContext('webgl2'), 'gl')
+    const gl = ensureNonNullable(canvas?.getContext('webgl2', {
+      // 设置该属性为 true 时，canvas.toDataURL() 才能得到 webgl 绘制的内容
+      preserveDrawingBuffer: true,
+    }), 'gl')
 
     // Link the two shaders into a program
     const program = createProgram(gl, [vertexShaderSource, fragmentShaderSource])
@@ -124,6 +130,20 @@ export default function Page() {
   return (
     <div className='flex min-h-screen items-center justify-center'>
       <canvas id='c' className='border border-cyan-300' width={400} height={300} />
+      <div>
+        <button
+          type='button'
+          onClick={() => {
+            const canvas = document.querySelector<HTMLCanvasElement>('#c')!
+            const imageDataUrl = canvas.toDataURL()
+            setCapture(imageDataUrl)
+          }}
+          className='border border-cyan-500'
+        >
+          capture
+        </button>
+        {capture && <Image src={capture} width={400} height={300} alt='capture' className='border border-cyan-300' />}
+      </div>
     </div>
   )
 }
