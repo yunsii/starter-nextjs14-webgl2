@@ -44,7 +44,7 @@ const fragmentShaderSource = glsl`
 export default function Page() {
   const [capture, setCapture] = useState<string | null>(null)
 
-  const draw = useCallback(() => {
+  const render = useCallback(() => {
     // Get A WebGL context
     const canvas = document.querySelector<HTMLCanvasElement>('#c')
     const gl = ensureNonNullable(canvas?.getContext('webgl2', {
@@ -124,8 +124,8 @@ export default function Page() {
   }, [])
 
   useEffect(() => {
-    draw()
-  }, [draw])
+    render()
+  }, [render])
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
